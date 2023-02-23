@@ -60,9 +60,9 @@ const app = new Vue({
     },
     async updateLesson({ lesson_id, space }) {
       try {
-        const url = `${this.url}/lessons/${lesson_id}`;
+        const urla = `${this.url}/lessons/${lesson_id}`;
 
-        fetch(url, {
+        fetch(urla, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

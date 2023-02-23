@@ -24,7 +24,7 @@ self.addEventListener("install", function (e) {
 });
 
 self.addEventListener("fetch", function (e) {
-  e.respondWith(
+  e.respondwith(
     caches.match(e.request).then(function (cachedFile) {
       //download the file if it is not in the cache
       if (cachedFile) {

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- google fonts -->
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600"
+      rel="stylesheet"
+    />
+    <link rel="manifest" href="lessons.webmanifest" />
+    <!-- fontawesome icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+      integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <!-- vue -->
+    <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+    <title>Index</title>
+  </head>
+
+  <body>
+    <div id="app">
+      <div v-if="onHome">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+          <div class="container px-4 px-lg-5">
+            <div class="form-group">
+              <input
+                type="text"
+                placeholder="Search"
+                id="search"
+                class="search form-control"
+                v-model="searchText"
+              />
+            </div>
+            <!-- <button v-on:click="createNewOrder">xyz</button> -->
+            <button
+              v-if="this.cart.length > 0"
+              class="btn btn-outline-dark"
+              v-on:click="changePage"
+            >
+              Cart
+              <span class="badge bg-dark text-white ms-1 rounded-pill"
+                >{{ cartItemCount }}</span
+              >
+            </button>
+            <button v-else class="btn btn-outline-dark disabled">Cart</button>
+          </div>
+        </nav>
+        <section class="py-5">
+          <div class="container px-4 px-lg-5 mt-5">
+            <div
+              class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center"
+            >
+              <div v-for="item in lessons" class="col mb-5">
+                <div class="card h-100">
+                  <img
+                    v-bind:src="urls + '/' + item.image"
+                    class="card-img-top"
+                  />
+                  <div class="card-body p-4">
+                    <div class="text-center">
+                      <h5 class="fw-bolder">Topic: {{ item.topic}}</h5>
+                      <p><i v-bind:class="item.icon"></i></p>
+                      <p>Location: {{ item.location }}</p>
+                      <p>Spaces: {{ item.space }}</p>
+                      Price: £{{ item.price }}
+                    </div>
+                  </div>
+                  <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                    <div class="text-center" v-if="canAddToCart(item)">
+                      <a
+                        class="btn btn-outline-dark mt-auto"
+                        v-on:click="addToCart(item.id)"
+                        >Add to Cart</a
+                      >
+                    </div>
+
+                    <div class="text-center" v-else>
+                      <a class="btn btn-outline-dark mt-auto disabled"
+                        >Out of stock</a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div v-else>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+          <div class="container px-4 px-lg-5">
+            <button class="btn btn-outline-dark" v-on:click="changePage">
+              Cart
+              <span class="badge bg-dark text-white ms-1 rounded-pill"
+                >{{ cartItemCount }}</span
+              >
+            </button>
+          </div>
+        </nav>
+        <section class="py-5">
+          <div class="container px-4 px-lg-5 mt-5">
+            <div
+              class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center"
+            >
+              <div v-for="item in cart" class="col mb-5">
+                <div class="card h-100">
+                  <img v-bind:src="item.image" class="card-img-top" />
+
+                  <div class="card-body p-4">
+                    <div class="text-center">
+                      <h5 class="fw-bolder">
+                        Subject: {{ item.lesson.topic }}
+                      </h5>
+                      <p><i v-bind:class="item.lesson.icon"></i></p>
+                      <p>Location: {{ item.lesson.location }}</p>
+                      <p>Spaces: {{ item.space }}</p>
+                      Price: £{{ item.lesson.price }}
+                    </div>
+                  </div>
+                  <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                    <div class="text-center">
+                      <a
+                        class="btn btn-outline-dark mt-auto"
+                        v-on:click="removeFromCart(item.lessonId)"
+                        >Remove From Cart</a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section>
+          <div class="container">
+            <div class="py-5 text-center">
+              <h2>Checkout</h2>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12 order-md-1">
+                <form
+                  class="needs-validation"
+                  onkeyup="validate()"
+                  v-on:submit="checkout"
+                >
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <input
+                        name="name"
+                        type="text"
+                        id="name"
+                        v-model="checkoutForm.name.value"
+                        class="form-control"
+                        placeholder="Name"
+                      />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <input
+                        name="phone"
+                        type="text"
+                        id="phone"
+                        v-model="checkoutForm.phone.value"
+                        class="form-control"
+                        placeholder="Phone Number"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    class="col-md-12 mb-5 btn btn-primary btn-lg btn-block"
+                    id="btn"
+                    type="submit"
+                    v-on:click="submitForm"
+                    disabled
+                  >
+                    Checkout
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <!-- scripts -->
+    <script src="app.js"></script>
+    <script>
+      function validate() {
+        var name = document.getElementById("name").value;
+        var phone = document.getElementById("phone").value;
+        var btn = document.getElementById("btn");
+        var nameRGEX = /^[A-Za-z_ ]{2,90}$/i;
+        var phoneRGEX = /^\d{9,11}$/;
+        var nameResult = nameRGEX.test(name);
+        var phoneResult = phoneRGEX.test(phone);
+        if (nameResult == false) {
+          btn.disabled = true;
+        }
+
+        if (phoneResult == false) {
+          btn.disabled = true;
+        }
+        if (nameResult == true && phoneResult == true) {
+          btn.disabled = false;
+        }
+      }
+    </script>
+  </body>
+</html>
